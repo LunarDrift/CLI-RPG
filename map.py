@@ -1,6 +1,6 @@
 from copy import deepcopy
 from random import randint
-from tile import Tile, plains, forest, pines, mountain, water, player
+from tile import Tile, plains, forest, pines, mountain, water
 
 
 class Map:
@@ -9,25 +9,25 @@ class Map:
         self.height = height
 
         # Holds the rendered frame (terrain + player)
-        self.map_data: list[list[Tile]] = [[]]
+        self.map_data: list[list[Tile]] = []
 
         # This will hold ONLY terrain (forests, water, etc)
         # Use this to reset the map every frame before drawing player
-        self.base_map: list[list[Tile]] = [[]]
+        self.base_map: list[list[Tile]] = []
 
         self.generate_map()
 
         # Generate terrain features
-        self.generate_patch(forest, 3, 5, 5)
-        self.generate_patch(pines, 3, 3, 3)
-        self.generate_patch(mountain, 2, 5, 7)
-        self.generate_patch(water, 1, 10, 12)
+        self.generate_patch(forest, 5, 8, 8)
+        self.generate_patch(pines, 4, 4, 6)
+        self.generate_patch(mountain, 3, 7, 9)
+        self.generate_patch(water, 2, 10, 12)
 
         # Save the terrain now that patches have been generated
         self.base_map = deepcopy(self.map_data)
 
     def generate_map(self) -> None:
-        self.init_map_data = [
+        self.init_map_data: list[list[Tile]] = [
             [plains for _ in range(self.width)] for _ in range(self.height)
         ]
         self.map_data = deepcopy(self.init_map_data)
@@ -67,13 +67,33 @@ class Map:
             print("|" + "".join(row_tiles) + "|")
         print(frame)
 
-    def update_map(self, pos: list[int], player_marker: Tile) -> None:
-        x, y = pos
-
-        # Reset to base_map (has the terrain saved)
+    def update_map(self, player, enemies) -> None:
+        # Reset to terrain
         self.map_data = deepcopy(self.base_map)
 
-        # Draw the player at their current position
-        # Check boundaries to ensure no crashes
-        if 0 <= y < self.height and 0 <= x < self.width:
-            self.map_data[y][x] = player_marker
+        # Draw enemies first
+        for enemy in enemies:
+            ex, ey = enemy.pos
+            if 0 <= ey < self.height and 0 <= ex < self.width:
+                self.map_data[ey][ex] = enemy.symbol
+
+        # Draw player last so appears on top
+        px, py = player.pos
+        if 0 <= py < self.height and 0 <= px < self.width:
+            self.map_data[py][px] = player.symbol
+
+    # def update_map(self, pos: list[int], player_marker: Tile) -> None:
+    #     x, y = pos
+    #
+    #     # Reset to base_map (has the terrain saved)
+    #     self.map_data = deepcopy(self.base_map)
+    #
+    #     # Draw the player at their current position
+    #     # Check boundaries to ensure no crashes
+    #     if 0 <= y < self.height and 0 <= x < self.width:
+    #         self.map_data[y][x] = player_marker
+
+    def get_map_tiles(self):
+        for tiles in self.map_data:
+            for tile in tiles:
+                return tile.tile_id

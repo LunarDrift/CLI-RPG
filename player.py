@@ -13,17 +13,13 @@ class Player:
     def get_valid_moves(self, game_map: list[list]) -> dict[str, bool]:
         x, y = self.pos
 
-        # Define what tiles player CANNOT walk on
-        # Compare the Tile objects themselves
-        impassable = [mountain.symbol, water.symbol]
-
         def is_walkable(nx, ny):
             # Check map boundaries
             if not (0 <= nx < game_map.width and 0 <= ny < game_map.height):
                 return False
             # Check if the tile at that coordinate is impassable
             target_tile = game_map.base_map[ny][nx]
-            if target_tile.symbol in impassable:
+            if not target_tile.walkable:
                 return False
             return True
 

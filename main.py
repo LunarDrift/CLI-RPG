@@ -1,21 +1,31 @@
+import random
 from map import Map
 from player import Player
-import random
+from enemy import Enemy
+
+
+def get_random_walkable_position(game_map) -> tuple[int, int]:
+    while True:
+        x = random.randint(1, game_map.width - 3)
+        y = random.randint(1, game_map.height - 2)
+
+        if game_map.base_map[y][x].walkable:
+            return x, y
 
 
 def main():
-    map_w, map_h = 30, 15
+    map_w, map_h = 90, 30
     game_map = Map(map_w, map_h)
     player = Player()
 
-    # Spawn Logic:
-    # Set player to a random spot, or a fixed spot like (1, 1)
-    # Ideally, you would check game_map.base_map[y][x] to make sure
-    # you aren't spawning inside a mountain or water
-    player.pos = [random.randint(1, map_w - 2), random.randint(1, map_h - 2)]
+    enemy_x, enemy_y = get_random_walkable_position(game_map)
+    enemy = Enemy(enemy_x, enemy_y)
+    enemies = [enemy]
+
+    player.pos = list(get_random_walkable_position(game_map))
 
     # Perform initial draw so player appears before the first move
-    game_map.update_map(player.pos, player.symbol)
+    game_map.update_map(player, enemies)
 
     while True:
         # Clear screen with ANSI code
@@ -26,10 +36,10 @@ def main():
         # Get valid player moves
         valid_moves = player.get_valid_moves(game_map)
 
-        print(f"W: {'OK' if valid_moves['w'] else 'BLOCKED'}")
-        print(f"A: {'OK' if valid_moves['a'] else 'BLOCKED'}")
-        print(f"S: {'OK' if valid_moves['s'] else 'BLOCKED'}")
-        print(f"D: {'OK' if valid_moves['d'] else 'BLOCKED'}")
+        print(f"W - UP: {'OK' if valid_moves['w'] else 'BLOCKED'}")
+        print(f"A - LEFT: {'OK' if valid_moves['a'] else 'BLOCKED'}")
+        print(f"S - DOWN: {'OK' if valid_moves['s'] else 'BLOCKED'}")
+        print(f"D - RIGHT: {'OK' if valid_moves['d'] else 'BLOCKED'}")
 
         # print(f"Pos: {player.pos}")  # Debugging info
 
@@ -57,7 +67,7 @@ def main():
             time.sleep(0.5)
 
         # Update visuals
-        game_map.update_map(player.pos, player.symbol)
+        game_map.update_map(player, enemies)
 
 
 if __name__ == "__main__":

@@ -45,9 +45,6 @@ def main():
 
         movement = input(">>> ").lower()
 
-        # Store previous position in case we need to revert (collision logic later)
-        dx, dy = 0, 0
-
         # Only move if the key exists in our dict AND it is True
         if movement in valid_moves and valid_moves[movement]:
             match movement:
@@ -65,6 +62,10 @@ def main():
             import time
 
             time.sleep(0.5)
+
+        # Enemy movement
+        for enemy in enemies:
+            enemy.move()
 
         # Update visuals
         game_map.update_map(player, enemies)

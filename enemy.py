@@ -1,4 +1,4 @@
-from random import randint, choice
+from random import choice
 from tile import enemy
 
 
@@ -14,16 +14,3 @@ class Enemy:
         directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
         dx, dy = choice(directions)
         return dx, dy
-
-    # def move(self):
-    #     # Pick a random cardinal direction; North/South, East/West
-    #     # Need this so enemies can't move diagonally
-    #     axis = randint(0, 1)
-    #     dx = randint(-1, 1)
-    #     dy = randint(-1, 1)
-    #     if axis == 0:
-    #         # X axis
-    #         self.pos[0] += dx
-    #     elif axis == 1:
-    #         # Y axis
-    #         self.pos[1] += dy

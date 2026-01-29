@@ -10,7 +10,7 @@ class Game:
         self.player: Player = Player()
         self.enemies: list = []
 
-    def get_random_walkable_position(self, game_map) -> tuple[int, int]:
+    def get_random_walkable_position(self, game_map: Map) -> tuple[int, int]:
         while True:
             x = random.randint(1, game_map.width - 3)
             y = random.randint(1, game_map.height - 2)
@@ -47,6 +47,9 @@ class Game:
 
             self.game_map.display_map()
 
+            # ---------------
+            # Player movement
+            # ---------------
             # Get valid player moves
             valid_moves = self.player.get_valid_moves(self.game_map)
 
@@ -78,21 +81,22 @@ class Game:
 
                 time.sleep(0.5)
 
+            # ---------------
             # Enemy movement
+            # ---------------
             for enemy in self.enemies:
-                direction = enemy.choose_direction()
-                if self.can_move_to(
-                    self.game_map,
-                    enemy.pos[0] + direction[0],
-                    enemy.pos[1] + direction[1],
-                ):
-                    new_x = enemy.pos[0] + direction[0]
-                    new_y = enemy.pos[1] + direction[1]
-                    # return new_x, new_y
-                    enemy.pos = [new_x, new_y]
-
-            # for enemy in enemies:
-            #     enemy.move()
+                # Collect all valid neighboring tiles to prevent getting 'stuck'
+                valid_moves = [
+                    (dx, dy)
+                    for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]
+                    if self.can_move_to(
+                        self.game_map, enemy.pos[0] + dx, enemy.pos[1] + dy
+                    )
+                ]
+                if valid_moves:
+                    dx, dy = random.choice(valid_moves)
+                    enemy.pos[0] += dx
+                    enemy.pos[1] += dy
 
             # Update visuals
             self.game_map.update_map(self.player, self.enemies)

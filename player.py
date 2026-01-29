@@ -1,4 +1,4 @@
-from tile import player, mountain, water
+from tile import player
 
 
 class Player:

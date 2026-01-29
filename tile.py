@@ -35,8 +35,8 @@ pines = Tile(symbol="Y", color=GREEN)
 mountain = Tile(symbol="A", color=WHITE, walkable=False)
 water = Tile(symbol="~", color=BLUE, walkable=False)
 
-player = Tile(symbol="@", color=WHITE)
-enemy = Tile(symbol="E", color=RED)
+player = Tile(symbol="@", color=WHITE, walkable=False)
+enemy = Tile(symbol="E", color=RED, walkable=False)
 
 
 # forest = Tile("forest", "8", ANSI_GREEN)

@@ -33,6 +33,54 @@ class Game:
             return False
         return True
 
+    def move_player(self):
+        # ---------------
+        # Player movement
+        # ---------------
+        # Get valid player moves
+        valid_moves = self.player.get_valid_moves(self.game_map)
+
+        print(f"W - UP: {'OK' if valid_moves['w'] else 'BLOCKED'}")
+        print(f"A - LEFT: {'OK' if valid_moves['a'] else 'BLOCKED'}")
+        print(f"S - DOWN: {'OK' if valid_moves['s'] else 'BLOCKED'}")
+        print(f"D - RIGHT: {'OK' if valid_moves['d'] else 'BLOCKED'}")
+
+        movement = input(">>> ").lower()
+
+        # Only move if the key exists in our dict AND it is True
+        if movement in valid_moves and valid_moves[movement]:
+            match movement:
+                case "w":
+                    self.player.move(0, -1)
+                case "a":
+                    self.player.move(-1, 0)
+                case "s":
+                    self.player.move(0, 1)
+                case "d":
+                    self.player.move(1, 0)
+
+        else:
+            print("You can't go that way!")
+            import time
+
+            time.sleep(0.5)
+
+    def move_enemies(self):
+        # ---------------
+        # Enemy movement
+        # ---------------
+        for enemy in self.enemies:
+            # Collect all valid neighboring tiles to prevent getting 'stuck'
+            valid_moves = [
+                (dx, dy)
+                for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]
+                if self.can_move_to(self.game_map, enemy.pos[0] + dx, enemy.pos[1] + dy)
+            ]
+            if valid_moves:
+                dx, dy = random.choice(valid_moves)
+                enemy.pos[0] += dx
+                enemy.pos[1] += dy
+
     def run(self):
         self.spawn_enemies(self.game_map, self.enemies, 10)
 
@@ -47,56 +95,11 @@ class Game:
 
             self.game_map.display_map()
 
-            # ---------------
-            # Player movement
-            # ---------------
-            # Get valid player moves
-            valid_moves = self.player.get_valid_moves(self.game_map)
-
-            print(f"W - UP: {'OK' if valid_moves['w'] else 'BLOCKED'}")
-            print(f"A - LEFT: {'OK' if valid_moves['a'] else 'BLOCKED'}")
-            print(f"S - DOWN: {'OK' if valid_moves['s'] else 'BLOCKED'}")
-            print(f"D - RIGHT: {'OK' if valid_moves['d'] else 'BLOCKED'}")
+            self.move_player()
+            self.move_enemies()
 
             # DEBUGGING
             print(f"Pos: {self.player.pos}")  # Debugging info
-
-            movement = input(">>> ").lower()
-
-            # Only move if the key exists in our dict AND it is True
-            if movement in valid_moves and valid_moves[movement]:
-                match movement:
-                    case "w":
-                        self.player.move(0, -1)
-                    case "a":
-                        self.player.move(-1, 0)
-                    case "s":
-                        self.player.move(0, 1)
-                    case "d":
-                        self.player.move(1, 0)
-
-            else:
-                print("You can't go that way!")
-                import time
-
-                time.sleep(0.5)
-
-            # ---------------
-            # Enemy movement
-            # ---------------
-            for enemy in self.enemies:
-                # Collect all valid neighboring tiles to prevent getting 'stuck'
-                valid_moves = [
-                    (dx, dy)
-                    for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]
-                    if self.can_move_to(
-                        self.game_map, enemy.pos[0] + dx, enemy.pos[1] + dy
-                    )
-                ]
-                if valid_moves:
-                    dx, dy = random.choice(valid_moves)
-                    enemy.pos[0] += dx
-                    enemy.pos[1] += dy
 
             # Update visuals
             self.game_map.update_map(self.player, self.enemies)

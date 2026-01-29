@@ -81,19 +81,3 @@ class Map:
         px, py = player.pos
         if 0 <= py < self.height and 0 <= px < self.width:
             self.map_data[py][px] = player.symbol
-
-    # def update_map(self, pos: list[int], player_marker: Tile) -> None:
-    #     x, y = pos
-    #
-    #     # Reset to base_map (has the terrain saved)
-    #     self.map_data = deepcopy(self.base_map)
-    #
-    #     # Draw the player at their current position
-    #     # Check boundaries to ensure no crashes
-    #     if 0 <= y < self.height and 0 <= x < self.width:
-    #         self.map_data[y][x] = player_marker
-
-    def get_map_tiles(self):
-        for tiles in self.map_data:
-            for tile in tiles:
-                return tile.tile_id

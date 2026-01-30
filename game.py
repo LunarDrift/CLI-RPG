@@ -133,14 +133,17 @@ class Game:
 
             self.game_map.display_map()
 
+            # Battles
             for enemy in self.enemies:
                 if self.is_adjacent(self.player, enemy):
-                    if self.battle(self.player, enemy=enemy) == "enemy_killed":
+                    result = self.battle(self.player, enemy)
+
+                    if result == "enemy_killed":
                         self.enemies.remove(enemy)
                         break
-                    if self.battle(self.player, enemy) == "fled":
+                    elif result == "fled":
                         break
-                    if self.battle(self.player, enemy) == "player_dead":
+                    elif result == "player_dead":
                         print("You Died!")
                         time.sleep(0.5)
                         raise SystemExit()

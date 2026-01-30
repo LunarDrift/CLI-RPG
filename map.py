@@ -19,10 +19,10 @@ class Map:
         self.generate_map()
 
         # Generate terrain features
-        self.generate_patch(forest, 5, 8, 8)
-        self.generate_patch(pines, 4, 4, 6)
-        self.generate_patch(mountain, 3, 7, 9)
-        self.generate_patch(water, 2, 10, 12)
+        self.generate_patch(forest, 3, 4, 6)
+        self.generate_patch(pines, 2, 4, 6)
+        self.generate_patch(mountain, 2, 3, 5)
+        self.generate_patch(water, 1, 5, 6)
 
         # Save the terrain now that patches have been generated
         self.base_map = deepcopy(self.map_data)

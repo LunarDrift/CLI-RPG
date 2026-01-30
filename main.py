@@ -2,7 +2,7 @@ from game import Game
 
 
 def main():
-    game = Game(90, 30)
+    game = Game(45, 20)
     game.run()
 
 

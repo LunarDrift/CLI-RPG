@@ -11,6 +11,9 @@ class Game:
         self.player: Player = Player()
         self.enemies: list = []
 
+        # Keep track of turns
+        self.turns = 0
+
     def get_random_walkable_position(self, game_map: Map) -> tuple[int, int]:
         while True:
             x = random.randint(1, game_map.width - 3)
@@ -42,19 +45,8 @@ class Game:
             return False
         return True
 
-    def move_player(self):
-        # ---------------
-        # Player movement
-        # ---------------
-        # Get valid player moves
-        valid_moves = self.player.get_valid_moves(self.game_map)
-
-        print(f"W - UP: {'OK' if valid_moves['w'] else 'BLOCKED'}")
-        print(f"A - LEFT: {'OK' if valid_moves['a'] else 'BLOCKED'}")
-        print(f"S - DOWN: {'OK' if valid_moves['s'] else 'BLOCKED'}")
-        print(f"D - RIGHT: {'OK' if valid_moves['d'] else 'BLOCKED'}")
-
-        movement = input(">>> ").lower()
+    def move_player(self, valid_moves, movement):
+        self.turns += 1
 
         # Only move if the key exists in our dict AND it is True
         if movement in valid_moves and valid_moves[movement]:
@@ -67,12 +59,6 @@ class Game:
                     self.player.move(0, 1)
                 case "d":
                     self.player.move(1, 0)
-
-        else:
-            print("You can't go that way!")
-            import time
-
-            time.sleep(0.5)
 
     def move_enemies(self):
         # ---------------
@@ -120,7 +106,7 @@ class Game:
             return "player_dead"
 
     def run(self):
-        self.spawn_enemies(self.game_map, self.enemies, 10)
+        self.spawn_enemies(self.game_map, self.enemies, 5)
 
         self.player.pos = list(self.get_random_walkable_position(self.game_map))
 
@@ -140,7 +126,21 @@ class Game:
 
                     if result == "enemy_killed":
                         self.enemies.remove(enemy)
+                        # Win condition
+                        # All enemies killed = Winner
+                        if len(self.enemies) == 0:
+                            # Clear screen
+                            print("\033c", end="")
+
+                            # Print win message
+                            print(
+                                "Congrats! You've defeated all enemies and returned peace to the lands!"
+                            )
+                            time.sleep(1.0)
+                            raise SystemExit()
+
                         break
+
                     elif result == "fled":
                         break
                     elif result == "player_dead":
@@ -148,10 +148,31 @@ class Game:
                         time.sleep(0.5)
                         raise SystemExit()
 
-            # DEBUGGING
-            print(f"Pos: {self.player.pos}")  # Debugging info
+            # UI Info
+            print(f"Pos: {self.player.pos}")
+            print(f"HP: {self.player.hp}")
+            print(f"Enemies Left: {len(self.enemies)}")
+            print(f"Turns Survived: {self.turns}\n")
 
-            self.move_player()
+            # ---------------
+            # Player movement
+            # ---------------
+            # Get valid player moves
+            valid_moves = self.player.get_valid_moves(self.game_map)
+
+            print(f" W - UP: {'OK' if valid_moves['w'] else 'BLOCKED'}")
+            print(f" A - LEFT: {'OK' if valid_moves['a'] else 'BLOCKED'}")
+            print(f" S - DOWN: {'OK' if valid_moves['s'] else 'BLOCKED'}")
+            print(f" D - RIGHT: {'OK' if valid_moves['d'] else 'BLOCKED'}")
+            print(" R - Rest to regain HP\n")
+
+            player_input = input(">>> ").lower()
+
+            # Press 'r' to rest and regain hp
+            if player_input == "r":
+                self.player.hp = min(self.player.hp + 1, 10)
+
+            self.move_player(valid_moves, player_input)
             self.move_enemies()
 
             # Update visuals

@@ -5,6 +5,7 @@ class Player:
     def __init__(self):
         self.pos = [0, 0]
         self.symbol = player
+        self.hp = 10
 
     def move(self, x: int, y: int) -> None:
         self.pos[0] += x

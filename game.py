@@ -1,3 +1,4 @@
+import time
 import random
 from map import Map
 from player import Player
@@ -17,6 +18,14 @@ class Game:
 
             if game_map.base_map[y][x].walkable:
                 return x, y
+
+    def is_adjacent(self, player: Player, enemy: Enemy) -> tuple:
+        dx = abs(player.pos[0] - enemy.pos[0])
+        dy = abs(player.pos[1] - enemy.pos[1])
+        # If they are next to each other:
+        # one axis differs by 1
+        # the other axis differs by 0
+        return dx + dy == 1 or dx + dy == 0
 
     def spawn_enemies(self, game_map: Map, enemies_list: list, amount: int) -> None:
         for _ in range(amount):
@@ -81,6 +90,35 @@ class Game:
                 enemy.pos[0] += dx
                 enemy.pos[1] += dy
 
+    def battle(self, player, enemy):
+        print("You've encountered an enemy! Prepare for battle!\n")
+
+        while player.hp > 0 and enemy.hp > 0:
+            print("1. Attack    2. Flee\n")
+            print(f"Current HP: {player.hp}")
+            print(f"Enemy HP: {enemy.hp}")
+
+            player_choice = input(">>> ")
+
+            if player_choice not in ("1", "2"):
+                print("Enter a valid choice. 1 or 2.")
+
+            elif player_choice == "1":
+                enemy.hp -= 1
+                if enemy.hp <= 0:
+                    print("Enemy defeated!")
+                    return "enemy_killed"
+
+                else:
+                    # Enemy hits player back
+                    player.hp -= 1
+
+            elif player_choice == "2":
+                return "fled"
+
+        if player.hp <= 0:
+            return "player_dead"
+
     def run(self):
         self.spawn_enemies(self.game_map, self.enemies, 10)
 
@@ -95,11 +133,23 @@ class Game:
 
             self.game_map.display_map()
 
-            self.move_player()
-            self.move_enemies()
+            for enemy in self.enemies:
+                if self.is_adjacent(self.player, enemy):
+                    if self.battle(self.player, enemy=enemy) == "enemy_killed":
+                        self.enemies.remove(enemy)
+                        break
+                    if self.battle(self.player, enemy) == "fled":
+                        break
+                    if self.battle(self.player, enemy) == "player_dead":
+                        print("You Died!")
+                        time.sleep(0.5)
+                        raise SystemExit()
 
             # DEBUGGING
             print(f"Pos: {self.player.pos}")  # Debugging info
+
+            self.move_player()
+            self.move_enemies()
 
             # Update visuals
             self.game_map.update_map(self.player, self.enemies)

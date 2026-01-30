@@ -1,6 +1,7 @@
 from copy import deepcopy
 from random import randint
 from tile import Tile, plains, forest, pines, mountain, water
+from colors import RED, GREEN, BLUE, ANSI_RESET, BOLD
 
 
 class Map:
@@ -66,6 +67,15 @@ class Map:
             row_tiles = [tile.symbol for tile in row]
             print("|" + "".join(row_tiles) + "|")
         print(frame)
+        print()
+        self.display_map_legend()
+
+    def display_map_legend(self):
+        print(f"{BOLD}--------- Map Atlas ----------{ANSI_RESET}")
+        print(f" @ - Player  |  {RED}E - Enemy{ANSI_RESET}")
+        print(f" {BLUE}~ - Water{ANSI_RESET}  |  A - Mountain")
+        print(f" {GREEN}8 - Forest{ANSI_RESET}  | {GREEN}Y - Pine Forest{ANSI_RESET}")
+        print(f"{BOLD}------------------------------{ANSI_RESET}\n")
 
     def update_map(self, player, enemies) -> None:
         # Reset to terrain
